@@ -40,6 +40,7 @@ Version: 1.0.0
     height: auto;
     aspect-ratio: 1;
     object-fit: cover;
+    border: 1px solid #ccc;
 }
 
 /* Recipe lines: two-column layout */
@@ -80,10 +81,22 @@ Version: 1.0.0
     }
 }
 
+/* === Search Box === */
+.wp-block-search__input,
+.wp-block-search__button {
+    border-radius: 0;
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+}
+
 /* === Sidebar === */
 .sagacook-sidebar .wp-block-heading {
     margin-top: 0;
     margin-bottom: 0.2rem;
+}
+
+.sagacook-sidebar .wp-block-heading + * + .wp-block-heading {
+    margin-top: 1.5rem;
 }
 
 .sagacook-sidebar {

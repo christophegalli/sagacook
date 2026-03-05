@@ -112,6 +112,70 @@ function sagacook_register_types() {
 }
 
 /**
+ * Search: include rezept + produkt, and match taxonomy terms.
+ */
+add_filter( 'posts_search', 'sagacook_search_include_terms', 10, 2 );
+
+function sagacook_search_include_terms( $search, $query ) {
+    global $wpdb;
+
+    if ( is_admin() || ! $query->is_search() || empty( $search ) ) {
+        return $search;
+    }
+
+    $s = $query->get( 's' );
+    if ( ! $s ) {
+        return $search;
+    }
+
+    $like     = '%' . $wpdb->esc_like( $s ) . '%';
+    $term_ids = $wpdb->get_col( $wpdb->prepare(
+        "SELECT t.term_id
+         FROM {$wpdb->terms} t
+         INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
+         WHERE tt.taxonomy IN ('tags', 'region')
+         AND t.name LIKE %s",
+        $like
+    ) );
+
+    if ( empty( $term_ids ) ) {
+        return $search;
+    }
+
+    $ids_in   = implode( ',', array_map( 'intval', $term_ids ) );
+    $post_ids = $wpdb->get_col(
+        "SELECT DISTINCT tr.object_id
+         FROM {$wpdb->term_relationships} tr
+         INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+         WHERE tt.term_id IN ($ids_in)"
+    );
+
+    if ( empty( $post_ids ) ) {
+        return $search;
+    }
+
+    $post_ids_in = implode( ',', array_map( 'intval', $post_ids ) );
+    $search     .= " OR {$wpdb->posts}.ID IN ($post_ids_in)";
+
+    return $search;
+}
+
+// Wrap the entire WHERE so the post_type restriction applies to all OR branches.
+add_filter( 'posts_where', 'sagacook_search_restrict_types', 99, 2 );
+
+function sagacook_search_restrict_types( $where, $query ) {
+    global $wpdb;
+
+    if ( is_admin() || ! $query->is_search() ) {
+        return $where;
+    }
+
+    // Strip the leading AND so we can wrap cleanly.
+    $inner = preg_replace( '/^\s*AND\s+/i', '', trim( $where ) );
+    return " AND ($inner) AND {$wpdb->posts}.post_type = 'rezept' AND {$wpdb->posts}.post_status = 'publish'";
+}
+
+/**
  * Shortcodes for single recipe display.
  */
 add_shortcode( 'rezeptlinien', 'sagacook_rezeptlinien_shortcode' );
