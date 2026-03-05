@@ -1,0 +1,50 @@
+<!-- wp:template-part {"slug":"header","area":"header"} /-->
+
+<!-- wp:group {"layout":{"type":"constrained"}} -->
+<div class="wp-block-group">
+
+<!-- wp:heading {"level":1,"style":{"spacing":{"margin":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|40"}}}} -->
+<h1 class="wp-block-heading" style="margin-top:var(--wp--preset--spacing--50);margin-bottom:var(--wp--preset--spacing--40)">Rezepte</h1>
+<!-- /wp:heading -->
+
+<!-- wp:columns {"style":{"spacing":{"blockGap":{"left":"var:preset|spacing|50"}}}} -->
+<div class="wp-block-columns">
+
+<!-- wp:column {"width":"75%"} -->
+<div class="wp-block-column" style="flex-basis:75%">
+
+<!-- wp:query {"queryId":1,"query":{"postType":"rezept","perPage":200,"order":"asc","orderBy":"title","inherit":false},"className":"sagacook-tile-grid"} -->
+<div class="wp-block-query sagacook-tile-grid">
+
+<!-- wp:post-template {"layout":{"type":"grid","columnCount":4}} -->
+
+<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"1"} /-->
+
+<!-- wp:post-title {"level":3,"isLink":true} /-->
+
+<!-- /wp:post-template -->
+
+<!-- wp:query-no-results -->
+<!-- wp:paragraph -->
+<p>Keine Rezepte gefunden.</p>
+<!-- /wp:paragraph -->
+<!-- /wp:query-no-results -->
+
+</div>
+<!-- /wp:query -->
+
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column {"width":"25%","className":"sagacook-sidebar"} -->
+<div class="wp-block-column sagacook-sidebar" style="flex-basis:25%">
+<!-- wp:template-part {"slug":"sidebar"} /-->
+</div>
+<!-- /wp:column -->
+
+</div>
+<!-- /wp:columns -->
+
+</div>
+<!-- /wp:group -->
+

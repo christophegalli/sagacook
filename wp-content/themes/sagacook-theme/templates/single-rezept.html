@@ -1,0 +1,58 @@
+<!-- wp:template-part {"slug":"header","area":"header"} /-->
+
+<!-- wp:group {"tagName":"main","layout":{"type":"constrained"},"className":"sagacook-single-rezept"} -->
+<main class="wp-block-group sagacook-single-rezept">
+
+<!-- wp:post-title {"level":1,"style":{"spacing":{"margin":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|40"}}}} /-->
+
+<!-- wp:columns {"style":{"spacing":{"blockGap":{"left":"var:preset|spacing|50"}}}} -->
+<div class="wp-block-columns">
+
+<!-- wp:column {"width":"70%"} -->
+<div class="wp-block-column" style="flex-basis:70%">
+
+<!-- wp:columns {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} -->
+<div class="wp-block-columns" style="margin-bottom:var(--wp--preset--spacing--40)">
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:post-featured-image {"aspectRatio":"1"} /-->
+</div>
+<!-- /wp:column -->
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:shortcode -->
+[bild_zutaten]
+<!-- /wp:shortcode -->
+</div>
+<!-- /wp:column -->
+</div>
+<!-- /wp:columns -->
+
+<!-- wp:post-content {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} /-->
+
+<!-- wp:group {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"},"className":"sagacook-taxonomies"} -->
+<div class="wp-block-group sagacook-taxonomies" style="margin-bottom:var(--wp--preset--spacing--40)">
+<!-- wp:post-terms {"term":"kategorie","prefix":"Kategorie: "} /-->
+<!-- wp:post-terms {"term":"region","prefix":"Region: "} /-->
+</div>
+<!-- /wp:group -->
+
+<!-- wp:shortcode -->
+[rezeptlinien]
+<!-- /wp:shortcode -->
+
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column {"width":"30%","className":"sagacook-sidebar"} -->
+<div class="wp-block-column sagacook-sidebar" style="flex-basis:30%">
+<!-- wp:template-part {"slug":"sidebar"} /-->
+</div>
+<!-- /wp:column -->
+
+</div>
+<!-- /wp:columns -->
+
+</main>
+<!-- /wp:group -->
+

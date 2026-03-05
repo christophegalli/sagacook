@@ -1,0 +1,32 @@
+# WordPress core
+/wp-admin/
+/wp-includes/
+/wp-*.php
+/index.php
+/xmlrpc.php
+/license.txt
+/readme.html
+
+# Uploads
+/wp-content/uploads/
+
+# Parent theme (not ours)
+/wp-content/themes/twenty*/
+
+# Plugins we didn't write
+/wp-content/plugins/akismet/
+/wp-content/plugins/hello.php
+
+# DDEV
+/.ddev/
+
+# Claude Code local state
+/.claude/
+
+# Database dumps & exports
+/*.sql
+/export/
+
+# Misc
+*.log
+.DS_Store
