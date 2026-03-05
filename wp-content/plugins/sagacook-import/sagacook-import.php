@@ -151,35 +151,20 @@ function sagacook_rezeptlinien_shortcode() {
 }
 
 add_shortcode( 'alle_tags', 'sagacook_alle_tags_shortcode' );
-
-function sagacook_alle_tags_shortcode() {
-    $terms = get_terms( [ 'taxonomy' => 'tags', 'hide_empty' => true, 'orderby' => 'name', 'order' => 'ASC' ] );
-    if ( is_wp_error( $terms ) || empty( $terms ) ) {
-        return '';
-    }
-
-    $out = '<ul class="sagacook-alle-tags">';
-    foreach ( $terms as $term ) {
-        $url  = get_term_link( $term );
-        $out .= '<li><a href="' . esc_url( $url ) . '">' . esc_html( $term->name ) . '</a></li>';
-    }
-    $out .= '</ul>';
-
-    return $out;
-}
-
 add_shortcode( 'alle_regionen', 'sagacook_alle_regionen_shortcode' );
 
-function sagacook_alle_regionen_shortcode() {
-    $terms = get_terms( [ 'taxonomy' => 'region', 'hide_empty' => true, 'orderby' => 'name', 'order' => 'ASC' ] );
+function sagacook_alle_tags_shortcode()     { return sagacook_term_cloud( 'tags' ); }
+function sagacook_alle_regionen_shortcode() { return sagacook_term_cloud( 'region' ); }
+
+function sagacook_term_cloud( $taxonomy ) {
+    $terms = get_terms( [ 'taxonomy' => $taxonomy, 'hide_empty' => true, 'orderby' => 'name', 'order' => 'ASC' ] );
     if ( is_wp_error( $terms ) || empty( $terms ) ) {
         return '';
     }
 
     $out = '<ul class="sagacook-alle-tags">';
     foreach ( $terms as $term ) {
-        $url  = get_term_link( $term );
-        $out .= '<li><a href="' . esc_url( $url ) . '">' . esc_html( $term->name ) . '</a></li>';
+        $out .= '<li><a href="' . esc_url( get_term_link( $term ) ) . '">' . esc_html( $term->name ) . '</a></li>';
     }
     $out .= '</ul>';
 

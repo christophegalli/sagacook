@@ -35,26 +35,11 @@ Version: 1.0.0
 }
 
 /* === Single Recipe Page === */
-.sagacook-single-rezept > .wp-block-columns > .wp-block-column > *:first-child {
-    margin-top: 0 !important;
-    margin-block-start: 0 !important;
-}
-
-.sagacook-sidebar > .wp-block-template-part {
-    margin-top: 0 !important;
-    margin-block-start: 0 !important;
-    padding-top: 0 !important;
-}
-
 .sagacook-single-rezept .wp-block-column img {
     width: 100%;
     height: auto;
     aspect-ratio: 1;
     object-fit: cover;
-}
-
-.sagacook-taxonomies p {
-    margin: 0.25rem 0;
 }
 
 /* Recipe lines: two-column layout */
