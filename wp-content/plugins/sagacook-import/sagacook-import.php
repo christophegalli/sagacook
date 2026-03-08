@@ -176,6 +176,155 @@ function sagacook_search_restrict_types( $where, $query ) {
 }
 
 /**
+ * Meta boxes for rezept CPT.
+ */
+add_action( 'add_meta_boxes', 'sagacook_add_meta_boxes' );
+
+function sagacook_add_meta_boxes() {
+    add_meta_box( 'sagacook_rezeptlinien', 'Rezeptlinien', 'sagacook_rezeptlinien_meta_box', 'rezept', 'normal', 'high' );
+    add_meta_box( 'sagacook_bild_zutaten', 'Bild Zutaten',  'sagacook_bild_zutaten_meta_box',  'rezept', 'side' );
+}
+
+function sagacook_rezeptlinien_meta_box( $post ) {
+    $lines = get_post_meta( $post->ID, '_rezeptlinien', true );
+    if ( ! is_array( $lines ) ) {
+        $lines = [];
+    }
+    wp_nonce_field( 'sagacook_save_meta', 'sagacook_meta_nonce' );
+    $editor_defaults = [
+        'media_buttons' => false,
+        'teeny'         => true,
+        'textarea_rows' => 5,
+    ];
+    ?>
+    <style>
+    .sagacook-line { display: grid; grid-template-columns: 1fr 1fr 28px; gap: 8px; margin-bottom: 16px; border-top: 1px solid #e0e0e0; padding-top: 12px; }
+    .sagacook-line:first-child { border-top: none; padding-top: 0; }
+    .sagacook-line > div > label { font-weight: 600; font-size: 12px; display: block; margin-bottom: 4px; }
+    .sagacook-line textarea { width: 100%; }
+    </style>
+    <div id="sagacook-lines">
+    <?php foreach ( $lines as $i => $line ) : ?>
+        <div class="sagacook-line">
+            <div>
+                <label>Zutaten</label>
+                <?php wp_editor( $line['zutaten'] ?? '', 'sagacookzutaten' . $i,
+                    $editor_defaults + [ 'textarea_name' => 'rezeptlinien[' . $i . '][zutaten]' ] ); ?>
+            </div>
+            <div>
+                <label>Zubereitung</label>
+                <?php wp_editor( $line['zubereitung'] ?? '', 'sagacookzubereitung' . $i,
+                    $editor_defaults + [ 'textarea_name' => 'rezeptlinien[' . $i . '][zubereitung]' ] ); ?>
+            </div>
+            <div>
+                <button type="button" class="button remove-line" title="Zeile entfernen" style="margin-top:22px">✕</button>
+            </div>
+        </div>
+    <?php endforeach; ?>
+    </div>
+    <button type="button" id="sagacook-add-line" class="button" style="margin-top:8px">+ Zeile hinzufügen</button>
+    <p class="description" style="margin-top:6px;font-size:12px">Neue Zeilen nach dem Speichern mit dem Editor bearbeiten.</p>
+    <script>
+    (function() {
+        var lines = document.getElementById('sagacook-lines');
+        document.getElementById('sagacook-add-line').addEventListener('click', function() {
+            var idx = lines.querySelectorAll('.sagacook-line').length;
+            var div = document.createElement('div');
+            div.className = 'sagacook-line';
+            div.innerHTML =
+                '<div><label>Zutaten</label>'
+                + '<textarea name="rezeptlinien[' + idx + '][zutaten]" rows="5" style="width:100%"></textarea></div>'
+                + '<div><label>Zubereitung</label>'
+                + '<textarea name="rezeptlinien[' + idx + '][zubereitung]" rows="5" style="width:100%"></textarea></div>'
+                + '<div><button type="button" class="button remove-line" style="margin-top:22px">✕</button></div>';
+            lines.appendChild(div);
+        });
+        lines.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-line')) {
+                if (confirm('Diese Zeile löschen?')) {
+                    e.target.closest('.sagacook-line').remove();
+                }
+            }
+        });
+    })();
+    </script>
+    <?php
+}
+
+function sagacook_bild_zutaten_meta_box( $post ) {
+    $image_id    = (int) get_post_meta( $post->ID, '_bild_zutaten_id', true );
+    $preview_url = $image_id ? wp_get_attachment_image_url( $image_id, 'medium' ) : '';
+    wp_enqueue_media();
+    ?>
+    <div id="sagacook-bild-wrap">
+        <img id="sagacook-bild-preview" src="<?php echo esc_url( $preview_url ); ?>"
+             style="max-width:100%;display:<?php echo $preview_url ? 'block' : 'none'; ?>;margin-bottom:8px">
+        <input type="hidden" name="bild_zutaten_id" id="sagacook-bild-id" value="<?php echo esc_attr( $image_id ?: '' ); ?>">
+        <button type="button" id="sagacook-bild-select" class="button">Bild auswählen</button>
+        <button type="button" id="sagacook-bild-remove" class="button"
+                style="display:<?php echo $image_id ? 'inline-block' : 'none'; ?>;margin-left:4px">Entfernen</button>
+    </div>
+    <script>
+    (function() {
+        var frame;
+        document.getElementById('sagacook-bild-select').addEventListener('click', function() {
+            if (!frame) {
+                frame = wp.media({ title: 'Bild auswählen', button: { text: 'Auswählen' }, multiple: false });
+                frame.on('select', function() {
+                    var att = frame.state().get('selection').first().toJSON();
+                    document.getElementById('sagacook-bild-id').value = att.id;
+                    document.getElementById('sagacook-bild-preview').src = att.url;
+                    document.getElementById('sagacook-bild-preview').style.display = 'block';
+                    document.getElementById('sagacook-bild-remove').style.display = 'inline-block';
+                });
+            }
+            frame.open();
+        });
+        document.getElementById('sagacook-bild-remove').addEventListener('click', function() {
+            document.getElementById('sagacook-bild-id').value = '';
+            document.getElementById('sagacook-bild-preview').src = '';
+            document.getElementById('sagacook-bild-preview').style.display = 'none';
+            this.style.display = 'none';
+        });
+    })();
+    </script>
+    <?php
+}
+
+add_action( 'save_post_rezept', 'sagacook_save_meta' );
+
+function sagacook_save_meta( $post_id ) {
+    if ( ! isset( $_POST['sagacook_meta_nonce'] )
+         || ! wp_verify_nonce( $_POST['sagacook_meta_nonce'], 'sagacook_save_meta' ) ) {
+        return;
+    }
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+        return;
+    }
+
+    // Save recipe lines.
+    if ( isset( $_POST['rezeptlinien'] ) && is_array( $_POST['rezeptlinien'] ) ) {
+        $lines = [];
+        foreach ( $_POST['rezeptlinien'] as $line ) {
+            $zutaten     = wp_kses_post( wp_unslash( $line['zutaten'] ?? '' ) );
+            $zubereitung = wp_kses_post( wp_unslash( $line['zubereitung'] ?? '' ) );
+            if ( trim( strip_tags( $zutaten ) ) !== '' || trim( strip_tags( $zubereitung ) ) !== '' ) {
+                $lines[] = [ 'zutaten' => $zutaten, 'zubereitung' => $zubereitung ];
+            }
+        }
+        update_post_meta( $post_id, '_rezeptlinien', $lines );
+    }
+
+    // Save ingredients image.
+    $image_id = absint( $_POST['bild_zutaten_id'] ?? 0 );
+    if ( $image_id ) {
+        update_post_meta( $post_id, '_bild_zutaten_id', $image_id );
+    } else {
+        delete_post_meta( $post_id, '_bild_zutaten_id' );
+    }
+}
+
+/**
  * Shortcodes for single recipe display.
  */
 add_shortcode( 'rezeptlinien', 'sagacook_rezeptlinien_shortcode' );
@@ -202,6 +351,18 @@ function sagacook_rezeptlinien_shortcode() {
 
         if ( $zutaten ) {
             $zutaten = preg_replace( '/(<p>(\s|&nbsp;)*<\/p>\s*)+$/i', '', $zutaten );
+        }
+
+        if ( $zubereitung ) {
+            $zubereitung = preg_replace_callback(
+                '/(?:<p>- .+?<\/p>\s*)+/s',
+                function ( $m ) {
+                    preg_match_all( '/<p>- (.+?)<\/p>/s', $m[0], $items );
+                    $lis = array_map( fn( $t ) => '<li>- ' . $t . '</li>', $items[1] );
+                    return '<ul class="sagacook-remarks">' . implode( '', $lis ) . '</ul>';
+                },
+                $zubereitung
+            );
         }
 
         $out .= '<div class="rezeptlinien-line">';
