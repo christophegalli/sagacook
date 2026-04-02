@@ -377,9 +377,11 @@ function sagacook_rezeptlinien_shortcode() {
 
 add_shortcode( 'alle_tags', 'sagacook_alle_tags_shortcode' );
 add_shortcode( 'alle_regionen', 'sagacook_alle_regionen_shortcode' );
+add_shortcode( 'alle_kategorien', 'sagacook_alle_kategorien_shortcode' );
 
-function sagacook_alle_tags_shortcode()     { return sagacook_term_cloud( 'tags' ); }
-function sagacook_alle_regionen_shortcode() { return sagacook_term_cloud( 'region' ); }
+function sagacook_alle_tags_shortcode()       { return sagacook_term_cloud( 'tags' ); }
+function sagacook_alle_regionen_shortcode()   { return sagacook_term_cloud( 'region' ); }
+function sagacook_alle_kategorien_shortcode() { return sagacook_term_cloud( 'kategorie' ); }
 
 function sagacook_term_cloud( $taxonomy ) {
     $terms = get_terms( [ 'taxonomy' => $taxonomy, 'hide_empty' => true, 'orderby' => 'name', 'order' => 'ASC' ] );

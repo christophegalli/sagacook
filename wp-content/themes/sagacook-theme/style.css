@@ -15,6 +15,23 @@ a:hover {
     text-decoration: underline;
 }
 
+.wp-block-navigation a,
+.wp-block-navigation .wp-block-navigation-item__content {
+    color: #f5a623 !important;
+}
+
+/* === Mobile search === */
+.sagacook-mobile-search {
+    display: none;
+}
+
+@media (max-width: 782px) {
+    .sagacook-mobile-search {
+        display: block;
+        margin-bottom: 1rem;
+    }
+}
+
 /* === Recipe Tile Grid === */
 .sagacook-tile-grid .wp-block-post-featured-image {
     margin: 0;
@@ -130,9 +147,6 @@ a:hover {
 }
 
 .sagacook-sidebar {
-    position: sticky;
-    top: 2rem;
-    align-self: start;
 }
 
 .sagacook-alle-tags {
